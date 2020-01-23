@@ -36,6 +36,15 @@ const serverHandle = (req,res)=>{
   const url = req.url
   req.path = url.split('?')[0]
   req.query = queryString.parse(url.split('?')[1])
+  req.cookie = {}
+  const cookieStr = req.headers.cookie || '' 
+  cookieStr.split(';').forEach(item => {
+    if(!item)return
+    const arr = item.split('=')
+    const key = arr[0]
+    const value = arr[1]
+    req.cookie[key] = value
+  });
 
   getPostData(req).then( postData => {
     req.body = postData
@@ -50,11 +59,13 @@ const serverHandle = (req,res)=>{
       return
     }
     //处理用户相关路由
-    const userData = handleRouterUser(req,res)
-    if(userData){
-      res.end(
-        JSON.stringify(userData)
-      )
+    const userResult = handleRouterUser(req,res)
+    if(userResult){
+      userResult.then(userData=>{
+        res.end(
+          JSON.stringify(userData)
+        )
+      })
       return
     }
     //未命中路由，返回404

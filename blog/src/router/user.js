@@ -6,12 +6,14 @@ const handleUserRouter = (req,res) =>{
   const path = req.path
   // 登陆
   if(method === 'POST' && path === '/api/user/login'){
-    const data = loginCheck(req.body)
-    if(data){
-      return new SuccessModel(data)
-    }else{
-      return new ErrorModel('登陆失败')
-    }
+    const result = loginCheck(req.body)
+    return result.then(data=>{
+      if(data.username){
+        return new SuccessModel()
+      }else{
+        return new ErrorModel('登陆失败')
+      }
+    })
   }
 }
 module.exports = handleUserRouter
