@@ -6,6 +6,11 @@ const {
   del
 } = require('../controller/blog.js')
 const {SuccessModel,ErrorModel} = require('../model/model.js')
+const loginCheck = (req)=>{
+  if(!req.session.username){
+    return Promise.resolve(new ErrorModel('未登录'))
+  }
+}
 const handleBlogRouter = (req,res) =>{
   const method = req.method
   const path = req.path
@@ -29,6 +34,11 @@ const handleBlogRouter = (req,res) =>{
   }
   // 新建一篇博客
   if(method === 'POST' && path === '/api/blog/new'){
+    const loginCheckResult = loginCheck(req)
+    if(loginCheckResult){
+      return loginCheckResult
+    }
+    req.body.author = req.session.username
     const result = creat(req.body)
     return result.then(data =>{
       const insertId = data.insertId
@@ -37,6 +47,10 @@ const handleBlogRouter = (req,res) =>{
   }
   // 更新一篇博客
   if(method === 'POST' && path === '/api/blog/update'){
+    const loginCheckResult = loginCheck(req)
+    if(loginCheckResult){
+      return loginCheckResult
+    }
     const result = update(id,req.body)
     return result.then(data =>{
       if(data.affectedRows > 0){
@@ -48,6 +62,11 @@ const handleBlogRouter = (req,res) =>{
   }
   // 删除一篇博客
   if(method === 'POST' && path === '/api/blog/del'){
+    const loginCheckResult = loginCheck(req)
+    if(loginCheckResult){
+      return loginCheckResult
+    }
+    req.body.author = req.session.username
     const result = del(id,req.body)
     return result.then(data =>{
       console.log(data)

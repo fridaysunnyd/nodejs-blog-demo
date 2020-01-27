@@ -1,5 +1,5 @@
 const { exec } = require('../../db/mysql') 
-const loginCheck = (postData={})=>{
+const login = (postData={})=>{
   const username = postData.username
   const password = postData.password
   let sql = `select * from users where username='${username}' and password='${password}'`
@@ -8,5 +8,5 @@ const loginCheck = (postData={})=>{
   })
 }
 module.exports = {
-  loginCheck
+  login
 }
