@@ -2,6 +2,7 @@ const queryString = require('querystring')
 const handleRouterBlog = require('./src/router/blog.js')
 const handleRouterUser = require('./src/router/user.js')
 const { set,get } = require('./db/redis')
+const { access } = require('./src/utils/log')
 //公有session数据
 //let SESSION_DATA = {}
 //处理post data
@@ -39,6 +40,8 @@ const getCoolieExpires = ()=>{
   return d.toGMTString()
 }
 const serverHandle = (req,res)=>{
+  // 记录 access log
+  access(`${req.method} -- ${req.url} -- ${req.headers['user-agent']} -- ${Date.now()}`)
   //设置返回数据格式为json
   res.setHeader('Content-type','application/json')
   //获取path

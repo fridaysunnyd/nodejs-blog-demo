@@ -18,8 +18,17 @@ const handleBlogRouter = (req,res) =>{
   const id = query.id
   // 获取博客列表
   if(method === 'GET' && path === '/api/blog/list'){
-    const author = query.author || ''
+    let author = query.author || ''
     const keyWord = query.keyWord || ''
+    if(req.query.isadmin){
+      //管理员界面
+      const loginCheckResult = loginCheck(req)
+      if(loginCheckResult){
+        return loginCheckResult
+      }
+      //强制查询自己博客
+      author = req.session.username
+    }
     const result = getList(author,keyWord)
     return result.then(data=>{
       return new SuccessModel(data)
